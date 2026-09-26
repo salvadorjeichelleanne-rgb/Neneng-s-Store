@@ -265,7 +265,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               id="login-footer-copyright"
               className="text-xs text-gray-400 font-normal"
             >
-              &copy; 2024 Salas Store &bull; Owners: Ederlyn Salas &amp; Roderick Salas. All rights reserved.
+              &copy; 2024 Neneng's Store &bull; Owners: Ederlyn Salas &amp; Roderick Salas. All rights reserved.
             </p>
           </footer>
         </div>

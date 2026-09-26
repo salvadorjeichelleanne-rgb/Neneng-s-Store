@@ -47,7 +47,7 @@ export const ReceiptPrintModal: React.FC<ReceiptPrintModalProps> = ({
           <div className="text-center space-y-1 border-b border-dashed border-gray-300 pb-4">
             <div className="flex items-center justify-center gap-1.5 text-[#064e3b] font-bold text-base font-sans">
               <Store className="w-4 h-4" />
-              Salas Store
+              Neneng's Store
             </div>
             <p className="text-[11px] text-gray-600 font-sans font-medium">Owners: Ederlyn Salas &amp; Roderick Salas</p>
             <p className="text-[10px] text-gray-400">Hours: 6:00 AM - 8:00 PM &bull; Tel: (02) 8123-4567 &bull; Manila, PH</p>
