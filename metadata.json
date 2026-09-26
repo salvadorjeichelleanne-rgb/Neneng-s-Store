@@ -1,0 +1,6 @@
+{
+  "name": "Neneng's Store Credit Manager",
+  "description": "View and monitor customer credit and payment transactions with Neneng's Store Credit Manager.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
