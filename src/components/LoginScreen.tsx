@@ -83,7 +83,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                 id="branding-primary-header"
                 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#c2410c] uppercase font-sans"
               >
-                SALAS STORE
+                NENENG'S STORE
               </h2>
               <p className="text-xs font-semibold text-gray-700 mt-0.5">
                 Owners: Ederlyn Salas &amp; Roderick Salas
