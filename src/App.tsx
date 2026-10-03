@@ -10,7 +10,7 @@ import { LoginScreen } from './components/LoginScreen';
 import { DashboardScreen } from './components/DashboardScreen';
 import { CustomersScreen } from './components/CustomersScreen';
 import { AddCustomerScreen } from './components/AddCustomerScreen';
-import { CustomerProfileScreen } from './components/CustomerProfileScreen';
+import CustomerProfileScreen from './components/CustomerProfileScreen';
 import { AddCreditScreen } from './components/AddCreditScreen';
 import { RecordPaymentScreen } from './components/RecordPaymentScreen';
 import { NewTransactionModal } from './components/NewTransactionModal';
