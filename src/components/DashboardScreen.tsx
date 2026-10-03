@@ -104,7 +104,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               </h1>
               <div id="dashboard-page-subtitle" className="flex flex-wrap items-center gap-2 mt-0.5">
                 <span className="text-sm text-gray-500 font-medium">
-                  Salas Store &bull; Owners: Ederlyn &amp; Roderick Salas
+                  Neneng's Store &bull; Owners: Ederlyn &amp; Roderick Salas
                 </span>
                 <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
                   Hours: 6:00 AM - 8:00 PM
