@@ -19,10 +19,34 @@ import { CustomerProfileModal } from './components/CustomerProfileModal';
 import { INITIAL_TRANSACTIONS } from './data/transactions';
 import { INITIAL_CUSTOMERS } from './data/customers';
 import { Transaction, Customer, FilterState, TransactionType } from './types';
+import { Store, User, Clock, Check, Save, Menu } from 'lucide-react';
+import { TopbarUserStatus } from './components/TopbarUserStatus';
+
+export interface StoreInfo {
+  storeName: string;
+  storeOwners: string;
+  operatingHours: string;
+}
+
+const DEFAULT_STORE_INFO: StoreInfo = {
+  storeName: "Neneng's Store",
+  storeOwners: "Ederlyn Salas & Roderick Salas",
+  operatingHours: "6:00 AM - 8:00 PM Daily"
+};
 
 export default function App() {
+  const [storeInfo, setStoreInfo] = useState<StoreInfo>(() => {
+    try {
+      const saved = localStorage.getItem('neneng_store_profile');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_STORE_INFO;
+  });
+  const [editingStoreInfo, setEditingStoreInfo] = useState<StoreInfo>(storeInfo);
+  const [isStoreSavedNotice, setIsStoreSavedNotice] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState('Ederlyn & Roderick Salas');
+  const [currentUser, setCurrentUser] = useState(storeInfo.storeOwners);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
   const [creditViewMode, setCreditViewMode] = useState<'add' | 'profile'>('profile');
@@ -160,6 +184,37 @@ export default function App() {
     showToast(`Customer ${updated.name} updated successfully`);
   };
 
+  const handleSaveStoreInfo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStoreInfo.storeName.trim()) {
+      showToast('Store name cannot be empty.');
+      return;
+    }
+    if (!editingStoreInfo.storeOwners.trim()) {
+      showToast('Store owners cannot be empty.');
+      return;
+    }
+    if (!editingStoreInfo.operatingHours.trim()) {
+      showToast('Operating hours cannot be empty.');
+      return;
+    }
+
+    setStoreInfo(editingStoreInfo);
+    setCurrentUser(editingStoreInfo.storeOwners);
+    try {
+      localStorage.setItem('neneng_store_profile', JSON.stringify(editingStoreInfo));
+    } catch (err) {
+      console.error(err);
+    }
+    setIsStoreSavedNotice(true);
+    setTimeout(() => setIsStoreSavedNotice(false), 3000);
+    showToast('Store Information updated successfully!');
+  };
+
+  const handleResetStoreInfo = () => {
+    setEditingStoreInfo(storeInfo);
+  };
+
   const showToast = (message: string) => {
     setStatusNotification(message);
     setTimeout(() => {
@@ -171,7 +226,7 @@ export default function App() {
     setCurrentUser(user);
     setIsAuthenticated(true);
     setActiveMenuItem('Dashboard');
-    showToast(`Welcome back, Ederlyn & Roderick Salas!`);
+    showToast(`Welcome back, ${storeInfo.storeOwners}!`);
   };
 
   const handleLogout = () => {
@@ -205,6 +260,8 @@ export default function App() {
         onCloseMobile={() => setMobileMenuOpen(false)}
         activeItem={activeMenuItem}
         onSelectItem={handleSidebarItemSelect}
+        storeName={storeInfo.storeName}
+        storeOwners={storeInfo.storeOwners}
       />
 
       {/* Main Content Container */}
@@ -232,6 +289,8 @@ export default function App() {
                 handleAddTransaction(newTxn);
                 setCreditViewMode('profile');
               }}
+              onAddNewCustomer={handleAddCustomer}
+              storeOwners={storeInfo.storeOwners}
             />
           ) : (
             <CustomerProfileScreen
@@ -250,6 +309,7 @@ export default function App() {
                 setActiveMenuItem('Payments');
               }}
               onUpdateCustomer={handleUpdateCustomer}
+              storeOwners={storeInfo.storeOwners}
             />
           )
         ) : activeMenuItem === 'Payments' ? (
@@ -266,6 +326,7 @@ export default function App() {
               setActiveMenuItem('Credit / Utang');
               setCreditViewMode('profile');
             }}
+            storeOwners={storeInfo.storeOwners}
           />
         ) : activeMenuItem === 'Customers' ? (
           customerViewMode === 'add' ? (
@@ -276,6 +337,7 @@ export default function App() {
                 handleAddCustomer(newCust);
                 setCustomerViewMode('list');
               }}
+              storeOwners={storeInfo.storeOwners}
             />
           ) : (
             <CustomersScreen
@@ -292,6 +354,7 @@ export default function App() {
                 setActiveMenuItem('Credit / Utang');
                 setCreditViewMode('add');
               }}
+              storeOwners={storeInfo.storeOwners}
             />
           )
         ) : activeMenuItem === 'Dashboard' ? (
@@ -306,11 +369,17 @@ export default function App() {
             onViewDetails={(txn) => setSelectedTransaction(txn)}
             onPrintTransaction={(txn) => setReceiptToPrint(txn)}
             onToggleStatus={handleToggleStatus}
+            storeName={storeInfo.storeName}
+            storeOwners={storeInfo.storeOwners}
+            operatingHours={storeInfo.operatingHours}
           />
         ) : activeMenuItem === 'Transaction History' ? (
           <div className="flex-1 flex flex-col min-w-0">
             {/* Header Bar */}
-            <Header onOpenMobileMenu={() => setMobileMenuOpen(true)} />
+            <Header
+              onOpenMobileMenu={() => setMobileMenuOpen(true)}
+              storeOwners={storeInfo.storeOwners}
+            />
 
             {/* Page Main Content */}
             <main
@@ -344,61 +413,176 @@ export default function App() {
         ) : activeMenuItem === 'Settings' ? (
           <div className="flex-1 flex flex-col min-w-0">
             <header className="bg-white border-b border-gray-200/80 px-4 sm:px-8 py-5">
-              <h1 className="text-2xl font-bold text-gray-900">Settings &amp; Preferences</h1>
-              <p className="text-sm text-gray-500">Manage store preferences and application data</p>
+              <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto w-full">
+                <div className="flex items-center gap-3">
+                  <button
+                    id="settings-mobile-menu-btn"
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden focus:outline-none cursor-pointer"
+                    aria-label="Open navigation menu"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900 leading-tight">Settings &amp; Preferences</h1>
+                    <p className="text-sm text-gray-500 mt-0.5">Manage store profile, owners, and operating hours</p>
+                  </div>
+                </div>
+                <TopbarUserStatus storeOwners={storeInfo.storeOwners} />
+              </div>
             </header>
             <main className="flex-1 px-4 sm:px-8 py-8 max-w-4xl w-full mx-auto space-y-6">
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
-                <h2 className="text-lg font-bold text-gray-900 mb-1">Store Information</h2>
-                <p className="text-xs text-gray-500 mb-4">Current operating profile</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <span className="text-xs text-gray-500 block">Store Name</span>
-                    <span className="font-semibold text-gray-900">Salas Sari-Sari Store</span>
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Store Information</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Edit your store details, owners, and operating hours across the application
+                    </p>
                   </div>
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <span className="text-xs text-gray-500 block">Store Owners</span>
-                    <span className="font-semibold text-gray-900">Ederlyn Salas &amp; Roderick Salas</span>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <span className="text-xs text-gray-500 block">Currency</span>
-                    <span className="font-semibold text-gray-900">Philippine Peso (₱)</span>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl">
-                    <span className="text-xs text-gray-500 block">Operating Hours</span>
-                    <span className="font-semibold text-gray-900">6:00 AM - 8:00 PM Daily</span>
-                  </div>
+                  {isStoreSavedNotice && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-full animate-in fade-in duration-150">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      Changes Saved!
+                    </span>
+                  )}
                 </div>
-              </div>
 
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
-                <h2 className="text-lg font-bold text-gray-900 mb-1">Data Management &amp; Restore</h2>
-                <p className="text-xs text-gray-500 mb-4">
-                  Reset application records to the original starter ledger and customer accounts.
-                </p>
-                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm mb-4">
-                  <p className="font-semibold">Restore Initial Demo Data</p>
-                  <p className="text-xs mt-1 text-amber-800">
-                    Restoring defaults will reset all customers' balances, reinstate sample transactions, and clear active filters.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  id="restore-demo-data-btn"
-                  onClick={handleRestoreDefaults}
-                  className="px-5 py-2.5 bg-[#064e3b] hover:bg-[#043d2e] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
-                >
-                  Restore Initial Demo Data
-                </button>
+                <form onSubmit={handleSaveStoreInfo} className="space-y-5">
+                  {/* Store Name */}
+                  <div>
+                    <label
+                      htmlFor="setting-store-name"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5"
+                    >
+                      Store Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <Store className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        id="setting-store-name"
+                        value={editingStoreInfo.storeName}
+                        onChange={(e) =>
+                          setEditingStoreInfo((prev) => ({ ...prev, storeName: e.target.value }))
+                        }
+                        placeholder="e.g., Neneng's Store"
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f97316]/20 focus:border-[#f97316] transition-colors"
+                        required
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      Appears on the sidebar, header, printable receipts, and vouchers.
+                    </p>
+                  </div>
+
+                  {/* Store Owners */}
+                  <div>
+                    <label
+                      htmlFor="setting-store-owners"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5"
+                    >
+                      Store Owners <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        id="setting-store-owners"
+                        value={editingStoreInfo.storeOwners}
+                        onChange={(e) =>
+                          setEditingStoreInfo((prev) => ({ ...prev, storeOwners: e.target.value }))
+                        }
+                        placeholder="e.g., Ederlyn Salas & Roderick Salas"
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f97316]/20 focus:border-[#f97316] transition-colors"
+                        required
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      Displayed on the dashboard header, owner profile badge, and receipt slips.
+                    </p>
+                  </div>
+
+                  {/* Operating Hours */}
+                  <div>
+                    <label
+                      htmlFor="setting-operating-hours"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5"
+                    >
+                      Operating Hours <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <Clock className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        id="setting-operating-hours"
+                        value={editingStoreInfo.operatingHours}
+                        onChange={(e) =>
+                          setEditingStoreInfo((prev) => ({
+                            ...prev,
+                            operatingHours: e.target.value
+                          }))
+                        }
+                        placeholder="e.g., 6:00 AM - 8:00 PM Daily"
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm font-semibold text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f97316]/20 focus:border-[#f97316] transition-colors"
+                        required
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      Displayed in the dashboard status badge and receipts.
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-gray-100">
+                    <button
+                      type="button"
+                      id="reset-store-info-btn"
+                      onClick={handleResetStoreInfo}
+                      className="w-full sm:w-auto px-5 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      Discard Changes
+                    </button>
+                    <button
+                      type="submit"
+                      id="save-store-info-btn"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-[#f97316] hover:bg-[#ea580c] active:bg-[#c2410c] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Save Changes</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             </main>
           </div>
         ) : (
-          /* Fallback for other views */
+          /* Fallback for other views such as Reports */
           <div className="flex-1 flex flex-col min-w-0">
             <header className="bg-white border-b border-gray-200/80 px-4 sm:px-8 py-5">
-              <h1 className="text-2xl font-bold text-gray-900">{activeMenuItem}</h1>
-              <p className="text-sm text-gray-500">Salas Store Credit Management Module (Ederlyn &amp; Roderick Salas)</p>
+              <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto w-full">
+                <div className="flex items-center gap-3">
+                  <button
+                    id="reports-mobile-menu-btn"
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden focus:outline-none cursor-pointer"
+                    aria-label="Open navigation menu"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900 leading-tight">{activeMenuItem}</h1>
+                    <p className="text-sm text-gray-500 mt-0.5">{storeInfo.storeName} Management Module ({storeInfo.storeOwners})</p>
+                  </div>
+                </div>
+                <TopbarUserStatus storeOwners={storeInfo.storeOwners} />
+              </div>
             </header>
             <main className="flex-1 px-4 sm:px-8 py-10 max-w-7xl w-full mx-auto text-center">
               <div className="bg-white rounded-xl border border-gray-200 p-12 max-w-md mx-auto shadow-xs space-y-3">
@@ -435,6 +619,8 @@ export default function App() {
           setNewTxnType('Utang');
         }}
         onAddTransaction={handleAddTransaction}
+        customers={customers}
+        onAddNewCustomer={handleAddCustomer}
         defaultCustomer={newTxnCustomer}
         defaultType={newTxnType}
       />
@@ -470,6 +656,9 @@ export default function App() {
       <ReceiptPrintModal
         transaction={receiptToPrint}
         onClose={() => setReceiptToPrint(null)}
+        storeName={storeInfo.storeName}
+        storeOwners={storeInfo.storeOwners}
+        operatingHours={storeInfo.operatingHours}
       />
     </div>
   );

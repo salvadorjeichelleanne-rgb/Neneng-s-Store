@@ -17,13 +17,17 @@ interface SidebarProps {
   onCloseMobile?: () => void;
   activeItem?: string;
   onSelectItem?: (item: string) => void;
+  storeName?: string;
+  storeOwners?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile = false,
   onCloseMobile,
   activeItem = 'Transaction History',
-  onSelectItem
+  onSelectItem,
+  storeName = "Neneng's Store",
+  storeOwners = "Ederlyn & Roderick Salas"
 }) => {
   const mainMenuItems = [
     { name: 'Dashboard', icon: LayoutDashboard },
@@ -62,28 +66,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         id="sidebar"
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col justify-between w-64 bg-[#064e3b] text-white transition-transform duration-200 ease-in-out border-r border-[#043d2e]
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col justify-between w-64 bg-[#064e3b] text-white transition-transform duration-200 ease-in-out border-r border-[#043d2e] overflow-x-hidden
           ${isOpenMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Top Section */}
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
           {/* Header & Circular Store Logo */}
-          <div className="flex items-center justify-between p-6 pb-5 border-b border-emerald-800/60">
-            <div className="flex items-center gap-3.5">
+          <div className="flex items-center justify-between p-5 pb-4 border-b border-emerald-800/60 min-w-0">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               {/* Circular store logo */}
               <div
                 id="sidebar-store-logo"
-                className="w-12 h-12 rounded-full bg-emerald-700/80 border-2 border-emerald-400/40 flex items-center justify-center shadow-inner text-emerald-100 flex-shrink-0"
+                className="w-10 h-10 rounded-full bg-emerald-700/80 border-2 border-emerald-400/40 flex items-center justify-center shadow-inner text-emerald-100 shrink-0"
               >
-                <Store className="w-6 h-6 text-white" />
+                <Store className="w-5 h-5 text-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg tracking-tight text-white leading-tight">
-                  Salas Store
+              <div className="flex flex-col min-w-0 flex-1">
+                <span
+                  className="font-bold text-base tracking-tight text-white leading-tight truncate"
+                  title={storeName}
+                >
+                  {storeName}
                 </span>
-                <span className="text-xs text-emerald-200/80 font-medium tracking-wide">
-                  Ederlyn &amp; Roderick Salas
+                <span
+                  className="text-xs text-emerald-200/80 font-medium tracking-wide truncate"
+                  title={storeOwners}
+                >
+                  {storeOwners}
                 </span>
               </div>
             </div>
@@ -93,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 id="close-sidebar-mobile-btn"
                 onClick={onCloseMobile}
-                className="p-1 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-800 lg:hidden"
+                className="p-1 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-800 lg:hidden shrink-0 ml-1 cursor-pointer"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5" />
@@ -102,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {/* Main Navigation Menu */}
-          <nav className="flex-1 px-3.5 py-6 space-y-1.5" aria-label="Main menu">
+          <nav className="flex-1 px-3.5 py-6 space-y-1.5 overflow-x-hidden" aria-label="Main menu">
             <div className="px-3 pb-2 text-[11px] font-semibold tracking-wider text-emerald-300/60 uppercase">
               Menu
             </div>
@@ -136,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Bottom Menu: Settings, Logout */}
-        <div className="p-3.5 border-t border-emerald-800/60 space-y-1 bg-[#054333]">
+        <div className="p-3.5 border-t border-emerald-800/60 space-y-1 bg-[#054333] shrink-0 overflow-x-hidden">
           {bottomMenuItems.map((item) => {
             const Icon = item.icon;
             const isLogout = item.name === 'Logout';

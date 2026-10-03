@@ -11,6 +11,7 @@ import {
   Search
 } from 'lucide-react';
 import { Customer, Transaction } from '../types';
+import { TopbarUserStatus } from './TopbarUserStatus';
 
 interface RecordPaymentScreenProps {
   customers: Customer[];
@@ -18,6 +19,7 @@ interface RecordPaymentScreenProps {
   onOpenMobileMenu?: () => void;
   onSavePayment: (transaction: Transaction) => void;
   onCancel?: () => void;
+  storeOwners?: string;
 }
 
 export const RecordPaymentScreen: React.FC<RecordPaymentScreenProps> = ({
@@ -25,7 +27,8 @@ export const RecordPaymentScreen: React.FC<RecordPaymentScreenProps> = ({
   defaultCustomerName,
   onOpenMobileMenu,
   onSavePayment,
-  onCancel
+  onCancel,
+  storeOwners = 'Ederlyn & Roderick Salas'
 }) => {
   // Select Juan Dela Cruz by default or prop
   const initialCustomer = useMemo(() => {
@@ -127,7 +130,7 @@ export const RecordPaymentScreen: React.FC<RecordPaymentScreenProps> = ({
       {/* Top Bar */}
       <header
         id="record-payment-top-bar"
-        className="bg-white border-b border-gray-200/80 px-4 sm:px-8 py-4 sticky top-0 z-10"
+        className="bg-white border-b border-gray-200/80 px-4 sm:px-8 py-5"
       >
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           {/* Left: Mobile Menu & Page Header */}
@@ -155,31 +158,7 @@ export const RecordPaymentScreen: React.FC<RecordPaymentScreenProps> = ({
           </div>
 
           {/* Right: User Status */}
-          <div id="topbar-user-status" className="flex items-center gap-3 sm:gap-4 shrink-0">
-            {/* Notification Bell */}
-            <button
-              type="button"
-              id="notification-bell-btn"
-              className="relative p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
-            </button>
-
-            <div className="h-6 w-px bg-gray-200" />
-
-            {/* Profile Avatar & Label */}
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-emerald-100 border border-emerald-300 text-[#064e3b] flex items-center justify-center font-bold text-xs shadow-2xs">
-                SO
-              </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-xs font-semibold text-gray-900 leading-tight">Store Owners</p>
-                <p className="text-[11px] text-gray-500 leading-tight">Ederlyn &amp; Roderick Salas</p>
-              </div>
-            </div>
-          </div>
+          <TopbarUserStatus storeOwners={storeOwners} />
         </div>
       </header>
 
@@ -208,7 +187,7 @@ export const RecordPaymentScreen: React.FC<RecordPaymentScreenProps> = ({
           {/* Current Balance Highlight Card */}
           <div
             id="current-balance-card"
-            className="bg-white rounded-2xl border border-gray-200/90 shadow-sm p-6 relative z-20"
+            className="bg-white rounded-2xl border border-gray-200/90 shadow-sm p-6 relative"
           >
             <div className="flex items-center justify-between gap-4">
               <div>

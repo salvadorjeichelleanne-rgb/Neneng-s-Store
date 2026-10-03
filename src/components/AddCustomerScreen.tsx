@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Menu } from 'lucide-react';
 import { Customer } from '../types';
+import { TopbarUserStatus } from './TopbarUserStatus';
 
 interface AddCustomerScreenProps {
   onOpenMobileMenu?: () => void;
   onBack: () => void;
   onSaveCustomer: (customer: Customer) => void;
+  storeOwners?: string;
 }
 
 export const AddCustomerScreen: React.FC<AddCustomerScreenProps> = ({
   onOpenMobileMenu,
   onBack,
-  onSaveCustomer
+  onSaveCustomer,
+  storeOwners = 'Ederlyn & Roderick Salas'
 }) => {
   const [name, setName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
@@ -90,6 +93,9 @@ export const AddCustomerScreen: React.FC<AddCustomerScreenProps> = ({
               </p>
             </div>
           </div>
+
+          {/* Right: Notification Bell and SO Profile Avatar */}
+          <TopbarUserStatus storeOwners={storeOwners} />
         </div>
       </header>
 

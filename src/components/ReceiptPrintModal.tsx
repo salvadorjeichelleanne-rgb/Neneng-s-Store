@@ -1,15 +1,21 @@
 import React from 'react';
-import { X, Printer, Store } from 'lucide-react';
+import { X, Printer, CheckCircle2, Store } from 'lucide-react';
 import { Transaction } from '../types';
 
 interface ReceiptPrintModalProps {
   transaction: Transaction | null;
   onClose: () => void;
+  storeName?: string;
+  storeOwners?: string;
+  operatingHours?: string;
 }
 
 export const ReceiptPrintModal: React.FC<ReceiptPrintModalProps> = ({
   transaction,
-  onClose
+  onClose,
+  storeName = "Neneng's Store",
+  storeOwners = "Ederlyn Salas & Roderick Salas",
+  operatingHours = "6:00 AM - 8:00 PM"
 }) => {
   if (!transaction) return null;
 
@@ -47,10 +53,10 @@ export const ReceiptPrintModal: React.FC<ReceiptPrintModalProps> = ({
           <div className="text-center space-y-1 border-b border-dashed border-gray-300 pb-4">
             <div className="flex items-center justify-center gap-1.5 text-[#064e3b] font-bold text-base font-sans">
               <Store className="w-4 h-4" />
-              Neneng's Store
+              {storeName}
             </div>
-            <p className="text-[11px] text-gray-600 font-sans font-medium">Owners: Ederlyn Salas &amp; Roderick Salas</p>
-            <p className="text-[10px] text-gray-400">Hours: 6:00 AM - 8:00 PM &bull; Tel: (02) 8123-4567 &bull; Manila, PH</p>
+            <p className="text-[11px] text-gray-600 font-sans font-medium">Owners: {storeOwners}</p>
+            <p className="text-[10px] text-gray-400">Hours: {operatingHours} &bull; Manila, PH</p>
           </div>
 
           <div className="space-y-1.5 border-b border-dashed border-gray-300 pb-3">
@@ -77,10 +83,23 @@ export const ReceiptPrintModal: React.FC<ReceiptPrintModalProps> = ({
               <span>DESCRIPTION</span>
               <span>AMOUNT</span>
             </div>
-            <div className="flex justify-between font-medium">
-              <span className="max-w-[180px]">{transaction.description}</span>
-              <span>₱{transaction.amount.toFixed(2)}</span>
-            </div>
+            {transaction.items && transaction.items.length > 0 ? (
+              <div className="space-y-1">
+                {transaction.items.map((it, idx) => (
+                  <div key={idx} className="flex justify-between font-medium">
+                    <span className="max-w-[180px]">
+                      {it.name} {it.qty > 1 ? `(x${it.qty})` : ''}
+                    </span>
+                    <span>₱{(it.qty * it.price).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex justify-between font-medium">
+                <span className="max-w-[180px]">{transaction.description}</span>
+                <span>₱{transaction.amount.toFixed(2)}</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5 pt-1">

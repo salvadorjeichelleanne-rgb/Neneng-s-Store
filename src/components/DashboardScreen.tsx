@@ -14,6 +14,7 @@ import {
   Menu
 } from 'lucide-react';
 import { Transaction } from '../types';
+import { TopbarUserStatus } from './TopbarUserStatus';
 
 interface DashboardScreenProps {
   onOpenMobileMenu?: () => void;
@@ -23,6 +24,9 @@ interface DashboardScreenProps {
   onViewDetails: (t: Transaction) => void;
   onPrintTransaction: (t: Transaction) => void;
   onToggleStatus: (id: string) => void;
+  storeName?: string;
+  storeOwners?: string;
+  operatingHours?: string;
 }
 
 export const DashboardScreen: React.FC<DashboardScreenProps> = ({
@@ -32,7 +36,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   recentTransactions,
   onViewDetails,
   onPrintTransaction,
-  onToggleStatus
+  onToggleStatus,
+  storeName = "Neneng's Store",
+  storeOwners = "Ederlyn & Roderick Salas",
+  operatingHours = "6:00 AM - 8:00 PM"
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -104,25 +111,29 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               </h1>
               <div id="dashboard-page-subtitle" className="flex flex-wrap items-center gap-2 mt-0.5">
                 <span className="text-sm text-gray-500 font-medium">
-                  Neneng's Store &bull; Owners: Ederlyn &amp; Roderick Salas
+                  {storeName} &bull; Owners: {storeOwners}
                 </span>
                 <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-                  Hours: 6:00 AM - 8:00 PM
+                  Hours: {operatingHours}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Top-Right CTA: Bright orange/coral button */}
-          <button
-            type="button"
-            id="new-transaction-cta-btn"
-            onClick={onOpenNewTransaction}
-            className="self-start sm:self-auto py-2.5 px-4 bg-[#f97316] hover:bg-[#ea580c] active:bg-[#c2410c] text-white font-semibold text-sm rounded-lg shadow-xs transition-all duration-150 flex items-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500/40"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Transaction</span>
-          </button>
+          {/* Top-Right: CTA and TopbarUserStatus */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <button
+              type="button"
+              id="new-transaction-cta-btn"
+              onClick={onOpenNewTransaction}
+              className="py-2.5 px-4 bg-[#f97316] hover:bg-[#ea580c] active:bg-[#c2410c] text-white font-semibold text-sm rounded-xl shadow-xs transition-all duration-150 flex items-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500/40"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Transaction</span>
+            </button>
+            <div className="hidden sm:block h-6 w-px bg-gray-200" />
+            <TopbarUserStatus storeOwners={storeOwners} />
+          </div>
         </div>
       </header>
 

@@ -11,6 +11,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { Customer } from '../types';
+import { TopbarUserStatus } from './TopbarUserStatus';
 
 interface CustomersScreenProps {
   onOpenMobileMenu?: () => void;
@@ -18,6 +19,7 @@ interface CustomersScreenProps {
   onOpenAddCustomer: () => void;
   onViewCustomerProfile: (customer: Customer) => void;
   onRecordTransactionForCustomer: (customerName: string) => void;
+  storeOwners?: string;
 }
 
 export const CustomersScreen: React.FC<CustomersScreenProps> = ({
@@ -25,7 +27,8 @@ export const CustomersScreen: React.FC<CustomersScreenProps> = ({
   customers,
   onOpenAddCustomer,
   onViewCustomerProfile,
-  onRecordTransactionForCustomer
+  onRecordTransactionForCustomer,
+  storeOwners = 'Ederlyn & Roderick Salas'
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,18 +125,18 @@ export const CustomersScreen: React.FC<CustomersScreenProps> = ({
                 Customers
               </h1>
               <p className="text-xs text-gray-500 mt-0.5">
-                Manage customer directory, balances, and credit limits
+                Manage customer directory and store credit balances
               </p>
             </div>
           </div>
 
-          {/* Top Controls (Right-Aligned): Search Bar & Primary CTA */}
+          {/* Top Controls (Right-Aligned): Search Bar, Primary CTA & TopbarUserStatus */}
           <div
             id="customers-top-controls"
-            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto shrink-0"
           >
-            {/* Search Bar: Light outline input field with a search icon and placeholder text "Search customers..." */}
-            <div className="relative flex-1 sm:w-64 lg:w-72">
+            {/* Search Bar */}
+            <div className="relative flex-1 sm:w-56 lg:w-64">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Search className="w-4 h-4" />
               </div>
@@ -146,28 +149,32 @@ export const CustomersScreen: React.FC<CustomersScreenProps> = ({
                   setCurrentPage(1);
                 }}
                 placeholder="Search customers..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-2xs"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-2xs"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
                 >
                   Clear
                 </button>
               )}
             </div>
 
-            {/* Primary CTA: Bright orange/coral button labeled "+ Add Customer" */}
+            {/* Primary CTA: Add Customer */}
             <button
               type="button"
               id="add-customer-cta-btn"
               onClick={onOpenAddCustomer}
-              className="py-2.5 px-4 bg-[#f97316] hover:bg-[#ea580c] active:bg-[#c2410c] text-white font-semibold text-sm rounded-lg shadow-xs transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500/40 whitespace-nowrap"
+              className="py-2.5 px-4 bg-[#f97316] hover:bg-[#ea580c] active:bg-[#c2410c] text-white font-semibold text-sm rounded-xl shadow-xs transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500/40 whitespace-nowrap"
             >
               <Plus className="w-4 h-4" />
               <span>Add Customer</span>
             </button>
+
+            {/* Notification Bell and SO Avatar */}
+            <div className="hidden sm:block h-6 w-px bg-gray-200" />
+            <TopbarUserStatus storeOwners={storeOwners} />
           </div>
         </div>
       </header>
